@@ -1,66 +1,89 @@
-const { getDb } = require("../utils/mongodb.util");
+const MuonService = require("../services/muon.service");
+const MongoDB = require("../utils/mongodb.util");
+const ApiError = require("../api-error");
 
-// Lấy danh sách mượn (kèm lookup sách và độc giả)
-exports.getAll = async (req, res) => {
-  const db = getDb();
-  const data = await db.collection("theodoimuonsach").aggregate([
-    {
-      $lookup: {
-        from: "docgia",
-        localField: "MaDocGia",
-        foreignField: "MaDocGia",
-        as: "DocGia"
-      }
-    },
-    {
-      $lookup: {
-        from: "sach",
-        localField: "MaSach",
-        foreignField: "MaSach",
-        as: "Sach"
-      }
+// Tạo mới phiếu mượn
+exports.create = async (req, res, next) => {
+    if (!req.body?.MaDocGia || !req.body?.MaSach) {
+        return next(new ApiError(400, "Mã độc giả và mã sách không được bỏ trống"));
     }
-  ]).toArray();
-  res.json(data);
+
+    try {
+        const muonService = new MuonService(MongoDB.client);
+        const document = await muonService.create(req.body);
+        return res.send(document);
+    } catch (error) {
+        return next(new ApiError(500, "Lỗi khi tạo phiếu mượn"));
+    }
 };
 
-// Lấy 1 bản ghi mượn theo MaDocGia + MaSach
-exports.getById = async (req, res) => {
-  const db = getDb();
-  const data = await db.collection("theodoimuonsach").findOne({
-    MaDocGia: req.params.MaDocGia,
-    MaSach: req.params.MaSach
-  });
-  if (!data) return res.status(404).json({ message: "Không tìm thấy bản ghi mượn" });
-  res.json(data);
+// Lấy danh sách tất cả phiếu mượn
+exports.findAll = async (req, res, next) => {
+    let documents = [];
+    try {
+        const muonService = new MuonService(MongoDB.client);
+        documents = await muonService.find({});
+    } catch (error) {
+        return next(new ApiError(500, "Lỗi khi lấy danh sách phiếu mượn"));
+    }
+    return res.send(documents);
 };
 
-// Thêm bản ghi mượn
-exports.create = async (req, res) => {
-  const db = getDb();
-  const result = await db.collection("theodoimuonsach").insertOne(req.body);
-  res.status(201).json({ insertedId: result.insertedId });
+// Lấy thông tin phiếu mượn theo ID
+exports.findOne = async (req, res, next) => {
+    try {
+        const muonService = new MuonService(MongoDB.client);
+        const document = await muonService.findById(req.params.id);
+        if (!document) {
+            return next(new ApiError(404, "Không tìm thấy phiếu mượn"));
+        }
+        return res.send(document);
+    } catch (error) {
+        return next(new ApiError(500, `Lỗi khi lấy phiếu mượn có id=${req.params.id}`));
+    }
 };
 
-// Cập nhật thông tin mượn (ví dụ khi trả sách)
-exports.update = async (req, res) => {
-  const db = getDb();
-  const result = await db.collection("theodoimuonsach").updateOne(
-    {
-      MaDocGia: req.params.MaDocGia,
-      MaSach: req.params.MaSach
-    },
-    { $set: req.body }
-  );
-  res.json({ modifiedCount: result.modifiedCount });
+// Cập nhật phiếu mượn
+exports.update = async (req, res, next) => {
+    if (Object.keys(req.body).length === 0) {
+        return next(new ApiError(400, "Dữ liệu cập nhật không được để trống"));
+    }
+
+    try {
+        const muonService = new MuonService(MongoDB.client);
+        const document = await muonService.update(req.params.id, req.body);
+        if (!document) {
+            return next(new ApiError(404, "Không tìm thấy phiếu mượn"));
+        }
+        return res.send({ message: "Cập nhật phiếu mượn thành công" });
+    } catch (error) {
+        return next(new ApiError(500, `Lỗi khi cập nhật phiếu mượn có id=${req.params.id}`));
+    }
 };
 
-// Xóa bản ghi mượn
-exports.delete = async (req, res) => {
-  const db = getDb();
-  const result = await db.collection("theodoimuonsach").deleteOne({
-    MaDocGia: req.params.MaDocGia,
-    MaSach: req.params.MaSach
-  });
-  res.json({ deletedCount: result.deletedCount });
+// Xóa phiếu mượn
+exports.delete = async (req, res, next) => {
+    try {
+        const muonService = new MuonService(MongoDB.client);
+        const document = await muonService.delete(req.params.id);
+        if (!document) {
+            return next(new ApiError(404, "Không tìm thấy phiếu mượn để xóa"));
+        }
+        return res.send({ message: "Xóa phiếu mượn thành công" });
+    } catch (error) {
+        return next(new ApiError(500, `Không thể xóa phiếu mượn có id=${req.params.id}`));
+    }
+};
+
+// Xóa tất cả phiếu mượn
+exports.deleteAll = async (_req, res, next) => {
+    try {
+        const muonService = new MuonService(MongoDB.client);
+        const deletedCount = await muonService.deleteAll();
+        return res.send({
+            message: `${deletedCount} phiếu mượn đã được xóa thành công`,
+        });
+    } catch (error) {
+        return next(new ApiError(500, "Lỗi khi xóa tất cả phiếu mượn"));
+    }
 };

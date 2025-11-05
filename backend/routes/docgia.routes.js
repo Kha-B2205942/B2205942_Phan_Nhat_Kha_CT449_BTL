@@ -1,11 +1,17 @@
 const express = require("express");
-const router = express.Router();
-const ctrl = require("../controllers/docgia.controller");
+const docgia = require("../controllers/docgia.controller");
 
-router.get("/", ctrl.getAll); 
-router.get("/:MaDocGia", ctrl.getById);
-router.post("/", ctrl.create);
-router.put("/:MaDocGia", ctrl.update);
-router.delete("/:MaDocGia", ctrl.delete);
+const router = express.Router();
+
+router.route("/")
+    .get(docgia.findAll)     
+    .post(docgia.create)
+    .delete(docgia.deleteAll);
+
+router.route("/:MaDocGia")
+    .get(docgia.findOne)
+    .put(docgia.update)
+    .delete(docgia.delete);
 
 module.exports = router;
+

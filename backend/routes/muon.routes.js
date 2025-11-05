@@ -1,11 +1,16 @@
 const express = require("express");
-const router = express.Router();
-const ctrl = require("../controllers/muon.controller");
+const muon = require("../controllers/muon.controller");
 
-router.get("/", ctrl.getAll);
-router.get("/:MaDocGia/:MaSach", ctrl.getById);
-router.post("/", ctrl.create);
-router.put("/:MaDocGia/:MaSach", ctrl.update);
-router.delete("/:MaDocGia/:MaSach", ctrl.delete);
+const router = express.Router();
+
+router.route("/")
+    .get(muon.findAll)     
+    .post(muon.create)
+    .delete(muon.deleteAll);
+
+router.route("/:id")
+    .get(muon.findOne)
+    .put(muon.update)
+    .delete(muon.delete);
 
 module.exports = router;

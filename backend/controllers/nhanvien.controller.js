@@ -1,40 +1,93 @@
-const { getDb } = require("../utils/mongodb.util");
+const NhanVienService = require("../services/nhanvien.service");
+const MongoDB = require("../utils/mongodb.util");
+const ApiError = require("../api-error");
 
-// Lấy danh sách nhân viên
-exports.getAll = async (req, res) => {
-  const db = getDb();
-  const data = await db.collection("nhanvien").find().toArray();
-  res.json(data);
+// Create
+exports.create = async (req, res, next) => {
+  if (!req.body?.HoTenNV) {
+    return next(new ApiError(400, "Tên nhân viên không được để trống"));
+  }
+  try {
+    const nhanvienService = new NhanVienService(MongoDB.client);
+    const document = await nhanvienService.create(req.body);
+    return res.send(document);
+  } catch (error) {
+    if (error.message.includes("đã tồn tại")) {
+      return next(new ApiError(400, error.message));
+    }
+    return next(new ApiError(500, "Lỗi khi tạo nhân viên"));
+  }
 };
 
-// Lấy nhân viên theo mã
-exports.getById = async (req, res) => {
-  const db = getDb();
-  const nv = await db.collection("nhanvien").findOne({ MSNV: req.params.MSNV });
-  if (!nv) return res.status(404).json({ message: "Không tìm thấy nhân viên" });
-  res.json(nv);
+// Find all
+exports.findAll = async (req, res, next) => {
+  try {
+    const nhanvienService = new NhanVienService(MongoDB.client);
+    const { HoTenNV } = req.query;
+    const documents = HoTenNV
+      ? await nhanvienService.findByName(HoTenNV)
+      : await nhanvienService.find({});
+    return res.send(documents);
+  } catch (error) {
+    return next(new ApiError(500, "Lỗi khi lấy danh sách nhân viên"));
+  }
 };
 
-// Thêm nhân viên mới
-exports.create = async (req, res) => {
-  const db = getDb();
-  const result = await db.collection("nhanvien").insertOne(req.body);
-  res.status(201).json({ insertedId: result.insertedId });
+// Find one
+exports.findOne = async (req, res, next) => {
+  try {
+    const nhanvienService = new NhanVienService(MongoDB.client);
+    const document = await nhanvienService.findByMSNV(req.params.MSNV);
+    if (!document) {
+      return next(new ApiError(404, "Không tìm thấy nhân viên"));
+    }
+    return res.send(document);
+  } catch (error) {
+    return next(new ApiError(500, `Lỗi khi lấy nhân viên mã: ${req.params.MSNV}`));
+  }
 };
 
-// Cập nhật thông tin nhân viên
-exports.update = async (req, res) => {
-  const db = getDb();
-  const result = await db.collection("nhanvien").updateOne(
-    { MSNV: req.params.MSNV },
-    { $set: req.body }
-  );
-  res.json({ modifiedCount: result.modifiedCount });
+// Update
+exports.update = async (req, res, next) => {
+  if (Object.keys(req.body).length === 0)
+    return next(new ApiError(400, "Không có dữ liệu cập nhật"));
+
+  try {
+    const nhanvienService = new NhanVienService(MongoDB.client);
+    const document = await nhanvienService.update(req.params.MSNV, req.body);
+    if (!document) {
+      return next(new ApiError(404, "Không tìm thấy nhân viên"));
+    }
+    return res.send({ message: "Cập nhật nhân viên thành công" });
+  } catch (error) {
+    console.error("Lỗi cập nhật:", error);
+    return next(new ApiError(500, `Lỗi cập nhật nhân viên mã: ${req.params.MSNV}`));
+  }
 };
 
-// Xóa nhân viên
-exports.delete = async (req, res) => {
-  const db = getDb();
-  const result = await db.collection("nhanvien").deleteOne({ MSNV: req.params.MSNV });
-  res.json({ deletedCount: result.deletedCount });
+// Delete
+exports.delete = async (req, res, next) => {
+  try {
+    const nhanvienService = new NhanVienService(MongoDB.client);
+    const document = await nhanvienService.delete(req.params.MSNV);
+    if (!document) {
+      return next(new ApiError(404, "Không tìm thấy nhân viên"));
+    }
+    return res.send({ message: "Xóa nhân viên thành công" });
+  } catch (error) {
+    console.error("Lỗi xóa:", error);
+    return next(new ApiError(500, `Lỗi xóa nhân viên mã: ${req.params.MSNV}`));
+  }
+};
+
+// Delete all
+exports.deleteAll = async (_req, res, next) => {
+  try {
+    const nhanvienService = new NhanVienService(MongoDB.client);
+    const deletedCount = await nhanvienService.deleteAll();
+    return res.send({ message: `${deletedCount} nhân viên đã được xóa` });
+  } catch (error) {
+    console.error("Lỗi xóa tất cả:", error);
+    return next(new ApiError(500, "Lỗi khi xóa tất cả nhân viên"));
+  }
 };

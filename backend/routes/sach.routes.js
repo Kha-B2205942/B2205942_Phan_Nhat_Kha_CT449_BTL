@@ -1,11 +1,15 @@
 const express = require("express");
+const sach = require("../controllers/sach.controller");
+
 const router = express.Router();
-const ctrl = require("../controllers/sach.controller");
+router.route("/")
+    .get(sach.findAll)     
+    .post(sach.create)
+    .delete(sach.deleteAll);
 
-router.get("/", ctrl.getAll);
-router.get("/:MaSach", ctrl.getById);
-router.post("/", ctrl.create);
-router.put("/:MaSach", ctrl.update);
-router.delete("/:MaSach", ctrl.delete);
-
+router.route("/:MaSach")
+    .get(sach.findOne)
+    .put(sach.update)
+    .delete(sach.delete);
+    
 module.exports = router;

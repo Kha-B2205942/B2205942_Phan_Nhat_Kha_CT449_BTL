@@ -1,40 +1,111 @@
-const { getDb } = require("../utils/mongodb.util");
+const SachService = require("../services/sach.service");
+const MongoDB = require("../utils/mongodb.util");
+const ApiError = require("../api-error");
 
-// Lấy tất cả sách
-exports.getAll = async (req, res) => {
-  const db = getDb();
-  const data = await db.collection("sach").find().toArray();
-  res.json(data);
-};
-
-// Lấy sách theo mã
-exports.getById = async (req, res) => {
-  const db = getDb();
-  const doc = await db.collection("sach").findOne({ MaSach: req.params.MaSach });
-  if (!doc) return res.status(404).json({ message: "Không tìm thấy sách" });
-  res.json(doc);
-};
-
-// Thêm sách mới
-exports.create = async (req, res) => {
-  const db = getDb();
-  const result = await db.collection("sach").insertOne(req.body);
-  res.status(201).json({ insertedId: result.insertedId });
-};
-
-// Cập nhật thông tin sách
-exports.update = async (req, res) => {
-  const db = getDb();
-  const result = await db.collection("sach").updateOne(
-    { MaSach: req.params.MaSach },
-    { $set: req.body }
+// Create
+exports.create = async (req, res, next) => {
+  const requiredFields = [
+    "MaSach",
+    "TenSach",
+    "DonGia",
+    "SoQuyen",
+    "NamXuatBan",
+    "MaNXB",
+    "TacGia",
+  ];
+  const missingFields = requiredFields.filter(
+    (field) => !req.body[field] || req.body[field].toString().trim() === ""
   );
-  res.json({ modifiedCount: result.modifiedCount });
+
+  if (missingFields.length > 0) {
+    return next(
+      new ApiError(
+        400,
+        `Thiếu thông tin bắt buộc: ${missingFields.join(", ")}`
+      )
+    );
+  }
+  try {
+    const sachService = new SachService(MongoDB.client);
+    const document = await sachService.create(req.body);
+    return res.send(document);
+  } catch (error) {
+    if (error.message.includes("đã tồn tại")) {
+      return next(new ApiError(400, error.message));
+    }
+    return next(new ApiError(500, "Lỗi khi tạo sách"));
+  }
 };
 
-// Xóa sách
-exports.delete = async (req, res) => {
-  const db = getDb();
-  const result = await db.collection("sach").deleteOne({ MaSach: req.params.MaSach });
-  res.json({ deletedCount: result.deletedCount });
+// Find all
+exports.findAll = async (req, res, next) => {
+  try {
+    const sachService = new SachService(MongoDB.client);
+    const { TenSach } = req.query;
+    const documents = TenSach
+      ? await sachService.findByName(TenSach)
+      : await sachService.find({});
+    return res.send(documents);
+  } catch (error) {
+    return next(new ApiError(500, "Lỗi khi lấy danh sách sách"));
+  }
+};
+
+// Find one
+exports.findOne = async (req, res, next) => {
+  try {
+    const sachService = new SachService(MongoDB.client);
+    const document = await sachService.findByMaSach(req.params.MaSach);
+    if (!document) {
+      return next(new ApiError(404, "Không tìm thấy sách"));
+    }
+    return res.send(document);
+  } catch (error) {
+    return next(new ApiError(500, `Lỗi khi lấy sách mã: ${req.params.MaSach}`));
+  }
+};
+
+// Update
+exports.update = async (req, res, next) => {
+  if (Object.keys(req.body).length === 0)
+    return next(new ApiError(400, "Không có dữ liệu cập nhật"));
+
+  try {
+    const sachService = new SachService(MongoDB.client);
+    const document = await sachService.update(req.params.MaSach, req.body);
+    if (!document) {
+      return next(new ApiError(404, "Không tìm thấy sách"));
+    }
+    return res.send({ message: "Cập nhật sách thành công" });
+  } catch (error) {
+    console.error("Lỗi cập nhật:", error);
+    return next(new ApiError(500, `Lỗi cập nhật sách mã: ${req.params.MaSach}`));
+  }
+};
+
+// Delete
+exports.delete = async (req, res, next) => {
+  try {
+    const sachService = new SachService(MongoDB.client);
+    const document = await sachService.delete(req.params.MaSach);
+    if (!document) {
+      return next(new ApiError(404, "Không tìm thấy sách"));
+    }
+    return res.send({ message: "Xóa sách thành công" });
+  } catch (error) {
+    console.error("Lỗi xóa:", error);
+    return next(new ApiError(500, `Lỗi xóa sách mã: ${req.params.MaSach}`));
+  }
+};
+
+// Delete all
+exports.deleteAll = async (_req, res, next) => {
+  try {
+    const sachService = new SachService(MongoDB.client);
+    const deletedCount = await sachService.deleteAll();
+    return res.send({ message: `${deletedCount} sách đã được xóa` });
+  } catch (error) {
+    console.error("Lỗi xóa tất cả:", error);
+    return next(new ApiError(500, "Lỗi khi xóa tất cả sách"));
+  }
 };
