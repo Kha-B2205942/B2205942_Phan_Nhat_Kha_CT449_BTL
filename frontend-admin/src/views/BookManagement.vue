@@ -28,9 +28,9 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import InputSearch from '@/components/InputSearch.vue'; // Import component InputSearch
-import BookList from '@/components/BookList.vue'; // Import component BookList
-import BookService from '@/services/book.service.js'; // Import BookService
+import InputSearch from '@/components/InputSearch.vue';
+import BookList from '@/components/BookList.vue'; 
+import BookService from '@/services/Book.service.js';
 
 const books = ref([]);
 const searchText = ref('');

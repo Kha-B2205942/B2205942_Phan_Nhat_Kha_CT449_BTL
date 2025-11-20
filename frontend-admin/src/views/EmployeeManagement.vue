@@ -11,10 +11,10 @@
         <InputSearch v-model="searchText" />
       </div>
     </div>
-
+ 
     <!-- Hiển thị thông báo lỗi nếu có -->
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
-
+ 
     <!-- Hiển thị component EmployeeList và truyền dữ liệu vào -->
     <EmployeeList 
       :filteredEmployees="filteredEmployees"
@@ -24,36 +24,33 @@
     />
   </div>
 </template>
-
+ 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import InputSearch from '@/components/InputSearch.vue';
-import EmployeeList from '@/components/EmployeeList.vue';
-import EmployeeService from '@/services/Employee.service.js';
-
+import InputSearch from '@/components/InputSearch.vue'; // Import component InputSearch
+import EmployeeList from '@/components/EmployeeList.vue'; // Import component EmployeeList
+import EmployeeService from '@/services/Employee.service.js'; // Import EmployeeService
+ 
 const employees = ref([]);
 const searchText = ref('');
 const isLoading = ref(false);
 const error = ref(null);
 const router = useRouter();
-
+ 
 const filteredEmployees = computed(() => {
   const query = searchText.value.toLowerCase().trim();
   if (!query) {
-    return employees.value;
+    return employees.value; // Nếu không có từ khóa, trả về toàn bộ danh sách
   }
-
-  // Lọc nhân viên theo Tên, MSNV, Số điện thoại, Chức vụ, hoặc Địa chỉ
+ 
+  // Lọc nhân viên theo Tên hoặc MSNV
   return employees.value.filter(employee => 
-    employee.HoTenNV?.toLowerCase().includes(query) ||
-    employee.MSNV?.toLowerCase().includes(query) ||
-    employee.SoDienThoai?.toLowerCase().includes(query) ||
-    employee.ChucVu?.toLowerCase().includes(query) ||
-    employee.DiaChi?.toLowerCase().includes(query)
+    employee.HoTenNV.toLowerCase().includes(query) ||
+    employee.MSNV.toLowerCase().includes(query)
   );
 });
-
+ 
 const fetchEmployees = async () => {
   try {
     isLoading.value = true;
@@ -66,34 +63,41 @@ const fetchEmployees = async () => {
     isLoading.value = false;
   }
 };
-
+ 
 const deleteEmployee = async (MSNV) => {
   if (window.confirm(`Bạn có chắc chắn muốn xóa nhân viên có mã "${MSNV}" không?`)) {
     try {
       await EmployeeService.delete(MSNV);
-      await fetchEmployees(); // Tải lại danh sách
+      await fetchEmployees(); // Tải lại danh sách sau khi xóa
     } catch (err) {
       console.error("Lỗi khi xóa nhân viên:", err);
       alert("Đã xảy ra lỗi khi xóa nhân viên. Vui lòng thử lại.");
     }
   }
 };
-
+ 
 const goToAddEmployee = () => {
   router.push({ name: 'EmployeeAdd' });
 };
-
+ 
 const goToEditEmployee = (MSNV) => {
   router.push({ name: 'EmployeeEdit', params: { MSNV: MSNV } });
 };
-
+ 
 onMounted(() => {
   fetchEmployees();
 });
+ 
+// Theo dõi sự thay đổi của route để tải lại dữ liệu nếu cần
+watch(() => router.currentRoute.value, (to, from) => {
+    if (to.name === 'EmployeeManagement' && from.name && (from.name === 'EmployeeEdit' || from.name === 'EmployeeAdd')) {
+        fetchEmployees();
+    }
+});
 </script>
-
+ 
 <style scoped>
-
+ 
 .search-box .input-group-text {
   background-color: white;
   border-left: none;

@@ -1,108 +1,104 @@
 <template>
   <div>
-    <h4 class="fw-bold mb-3">Danh Sách Sách</h4>
+    <h4 class="fw-bold mb-3">Danh Sách Độc Giả</h4>
     
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
-        <button class="btn btn-primary me-2" @click="goToAddBook"><i class="fa-solid fa-plus me-1"></i>Thêm mới</button>
+        <button class="btn btn-primary me-2" @click="goToAddReader"><i class="fa-solid fa-plus me-1"></i>Thêm mới</button>
       </div>
       <!-- Thanh tìm kiếm -->
       <div>
         <InputSearch v-model="searchText" />
       </div>
     </div>
-
+ 
     <!-- Hiển thị thông báo lỗi nếu có -->
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
-
-    <!-- Hiển thị component BookList và truyền dữ liệu vào -->
-    <BookList 
-      :filteredBooks="filteredBooks"
+ 
+    <!-- Hiển thị component ReaderList và truyền dữ liệu vào -->
+    <ReaderList 
+      :filteredReaders="filteredReaders"
       :isLoading="isLoading"
-      :goToEditBook="goToEditBook"
-      :deleteBook="deleteBook"
+      :goToEditReader="goToEditReader"
+      :deleteReader="deleteReader"
     />
   </div>
 </template>
-
+ 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import InputSearch from '@/components/InputSearch.vue'; // Import component InputSearch
-import BookList from '@/components/BookList.vue'; // Import component BookList
-import BookService from '@/services/book.service.js'; // Import BookService
-
-const books = ref([]);
+import InputSearch from '@/components/InputSearch.vue'; 
+import ReaderList from '@/components/ReaderList.vue'; 
+import ReaderService from '@/services/Reader.service.js'; 
+ 
+const readers = ref([]);
 const searchText = ref('');
 const isLoading = ref(false);
 const error = ref(null);
 const router = useRouter();
-
-const filteredBooks = computed(() => {
+ 
+const filteredReaders = computed(() => {
   const query = searchText.value.toLowerCase().trim();
   if (!query) {
-    return books.value; // Nếu không có từ khóa, trả về toàn bộ danh sách
+    return readers.value; // Nếu không có từ khóa, trả về toàn bộ danh sách
   }
-
-  // Lọc sách theo Tên Sách hoặc Mã Sách
-  return books.value.filter(book => 
-    book.TenSach.toLowerCase().includes(query) ||
-    book.MaSach.toLowerCase().includes(query) ||
-    book.TacGia.toLowerCase().includes(query) ||
-    (book.SoLuongHienCo !== undefined && book.SoLuongHienCo.toString().includes(query))
+ 
+  // Lọc độc giả theo Tên hoặc Mã Độc Giả
+  return readers.value.filter(reader =>
+      reader.HoLot.toLowerCase().includes(query) ||
+      reader.Ten.toLowerCase().includes(query) ||
+      reader.MaDocGia.toLowerCase().includes(query)
   );
 });
-
-const fetchBooks = async () => {
+ 
+const fetchReaders = async () => {
   try {
     isLoading.value = true;
     error.value = null;
-    // Sử dụng BookService để lấy dữ liệu
-    books.value = await BookService.getAll();
+    // Sử dụng ReaderService để lấy dữ liệu
+    readers.value = await ReaderService.getAll();
   } catch (err) {
-    console.error("Lỗi tải sách:", err);
-    error.value = "Không thể tải danh sách sách. Vui lòng thử lại sau.";
+    console.error("Lỗi tải danh sách độc giả:", err);
+    error.value = "Không thể tải danh sách độc giả. Vui lòng thử lại sau.";
   } finally {
     isLoading.value = false;
   }
 };
-
-const deleteBook = async (MaSach) => {
-  if (window.confirm(`Bạn có chắc chắn muốn xóa sách có mã "${MaSach}" không?`)) {
+ 
+const deleteReader = async (MaDocGia) => {
+  if (window.confirm(`Bạn có chắc chắn muốn xóa độc giả có mã "${MaDocGia}" không?`)) {
     try {
-      // Sử dụng BookService để xóa
-      await BookService.delete(MaSach);
-      // Tải lại danh sách sách sau khi xóa thành công
-      await fetchBooks();
+      await ReaderService.delete(MaDocGia);
+      await fetchReaders(); // Tải lại danh sách sau khi xóa
     } catch (err) {
-      console.error("Lỗi khi xóa sách:", err);
-      alert("Đã xảy ra lỗi khi xóa sách. Vui lòng thử lại.");
+      console.error("Lỗi khi xóa độc giả:", err);
+      alert("Đã xảy ra lỗi khi xóa độc giả. Vui lòng thử lại.");
     }
   }
 };
-
-const goToAddBook = () => {
-  router.push({ name: 'BookAdd' });
+ 
+const goToAddReader = () => {
+  router.push({ name: 'ReaderAdd' });
 };
-
-const goToEditBook = (MaSach) => {
-  router.push({ name: 'BookEdit', params: { MaSach: MaSach } });
+ 
+const goToEditReader = (MaDocGia) => {
+  router.push({ name: 'ReaderEdit', params: { MaDocGia: MaDocGia } });
 };
-
+ 
 onMounted(() => {
-  fetchBooks();
+  fetchReaders();
 });
-
+ 
 // Theo dõi sự thay đổi của route để tải lại dữ liệu nếu cần
 watch(() => router.currentRoute.value, (to, from) => {
-    if (to.name === 'BookManagement' && from.name && (from.name === 'BookEdit' || from.name === 'BookAdd')) {
-        fetchBooks();
+    if (to.name === 'ReaderManagement' && from.name && (from.name === 'ReaderEdit' || from.name === 'ReaderAdd')) {
+        fetchReaders();
     }
 });
 </script>
-
+ 
 <style scoped>
-
 .search-box .input-group-text {
   background-color: white;
   border-left: none;

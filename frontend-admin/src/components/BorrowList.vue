@@ -25,6 +25,7 @@
             <td>
               <button v-if="borrow.TrangThai === 'Đang chờ duyệt'" class="btn btn-sm btn-success me-1" @click="updateBorrowStatus(borrow._id, 'Đã duyệt')" title="Duyệt"><i class="fa-solid fa-check"></i></button>
               <button v-if="borrow.TrangThai === 'Đã duyệt'" class="btn btn-sm btn-primary me-1" @click="updateBorrowStatus(borrow._id, 'Đã trả')" title="Xác nhận đã trả"><i class="fa-solid fa-undo"></i></button>
+              <button class="btn btn-sm btn-primary me-1" @click="goToEditBorrow(borrow._id)" title="Chỉnh sửa"><i class="fa-solid fa-pen"></i></button>
               <button class="btn btn-sm btn-danger" @click="deleteBorrow(borrow._id)" title="Xóa"><i class="fa-solid fa-trash"></i></button>
             </td>
           </tr>

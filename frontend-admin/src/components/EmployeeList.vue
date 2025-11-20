@@ -1,47 +1,39 @@
 <template>
-    <div class="table-responsive">
-      <table class="table table-bordered align-middle text-center">
-        <thead class="table-info">
-          <tr>
-            <th>Mã Sách</th>
-            <th>Tên Sách</th>
-            <th>Đơn Giá</th>
-            <th>Số Quyển</th>
-            <th>SL Hiện Có</th>
-            <th>Năm XB</th>
-            <th>Mã NXB</th>
-            <th>Tác Giả</th>
-            <th style="width: 100px;">Chức Năng</th> 
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="book in filteredBooks" :key="book.MaSach">
-            <td>{{ book.MaSach }}</td>
-            <td>{{ book.TenSach }}</td>
-            <td>{{ book.DonGia}} Vnđ</td>
-            <td>{{ book.SoQuyen }}</td>
-            <td>{{ book.SoQuyen }}</td>
-            <td>{{ book.NamXuatBan }}</td>
-            <td>{{ book.MaNXB }}</td>
-            <td>{{ book.TacGia }}</td>
-            <td>
-              <button class="btn btn-sm btn-primary me-1" @click="goToEditBook(book.MaSach)" title="Chỉnh sửa"><i class="fa-solid fa-pen"></i></button>
-              <button class="btn btn-sm btn-danger" @click="deleteBook(book.MaSach)"><i class="fa-solid fa-trash"></i></button>
-            </td>
-          </tr>
-          
-          <tr v-if="!isLoading && filteredBooks.length === 0">
-            <td colspan="9">Không tìm thấy sách phù hợp.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle text-center">
+      <thead class="table-info">
+        <tr>
+          <th>MSNV</th>
+          <th>Họ và Tên</th>
+          <th>Chức Vụ</th>
+          <th>Địa Chỉ</th>
+          <th>Số Điện Thoại</th>
+          <th style="width: 100px;">Chức Năng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="employee in filteredEmployees" :key="employee.MSNV">
+          <td>{{ employee.MSNV }}</td>
+          <td>{{ employee.HoTenNV }}</td>
+          <td>{{ employee.ChucVu }}</td>
+          <td>{{ employee.DiaChi }}</td>
+          <td>{{ employee.SoDienThoai }}</td>
+          <td>
+            <button class="btn btn-sm btn-primary me-1" @click="goToEditEmployee(employee.MSNV)" title="Chỉnh sửa"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-sm btn-danger" @click="deleteEmployee(employee.MSNV)" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+        <tr v-if="!isLoading && filteredEmployees.length === 0">
+          <td colspan="6">Không tìm thấy nhân viên phù hợp.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup>
-// Định nghĩa các props mà component này sẽ nhận từ component cha
 defineProps({
-  filteredBooks: {
+  filteredEmployees: {
     type: Array,
     required: true,
   },
@@ -49,11 +41,11 @@ defineProps({
     type: Boolean,
     required: true,
   },
-  goToEditBook: {
+  goToEditEmployee: {
     type: Function,
     required: true,
   },
-  deleteBook: {
+  deleteEmployee: {
     type: Function,
     required: true,
   },

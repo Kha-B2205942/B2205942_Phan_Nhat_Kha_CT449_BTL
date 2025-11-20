@@ -1,7 +1,7 @@
 import createApiClient from "./api.service";
 
 class BorrowService {
-    constructor(baseUrl = "/api/muonsach") {
+    constructor(baseUrl = "/api/muon") {
         this.api = createApiClient(baseUrl);
     }
 

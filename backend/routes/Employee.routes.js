@@ -1,5 +1,5 @@
 const express = require("express");
-const nhanvien = require("../controllers/Librarian.controller");
+const nhanvien = require("../controllers/Employee.controller");
 
 const router = express.Router();
 

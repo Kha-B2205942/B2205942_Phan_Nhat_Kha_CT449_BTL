@@ -40,10 +40,10 @@ const isCollapsed = ref(false);
 
 const menuItems = [
   { label: "Quản lý Sách", path: "/sach", icon: "fa-solid fa-book" },
+  { label: "Quản lý Mượn Sách", path: "/muon", icon: "fa-solid fa-handshake" },
+  { label: "Quản lý Nhân Viên", path: "/nhanvien", icon: "fa-solid fa-user-tie" },
   { label: "Quản lý Nhà Xuất Bản", path: "/nhaxuatban", icon: "fa-solid fa-building" },
   { label: "Quản lý Độc Giả", path: "/docgia", icon: "fa-solid fa-users" },
-  { label: "Quản lý Nhân Viên", path: "/nhanvien", icon: "fa-solid fa-user-tie" },
-  { label: "Quản lý Mượn Sách", path: "/muon", icon: "fa-solid fa-handshake" },
 ];
 
 const toggleCollapse = () => {

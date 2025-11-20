@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h4 class="fw-bold mb-3">Danh Sách Sách</h4>
+    <h4 class="fw-bold mb-3">Danh Sách Nhà Xuất Bản</h4>
     
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
-        <button class="btn btn-primary me-2" @click="goToAddBook"><i class="fa-solid fa-plus me-1"></i>Thêm mới</button>
+        <button class="btn btn-primary me-2" @click="goToAddPublisher"><i class="fa-solid fa-plus me-1"></i>Thêm Nhà Xuất Bản</button>
       </div>
       <!-- Thanh tìm kiếm -->
       <div>
@@ -16,11 +16,11 @@
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
     <!-- Hiển thị component BookList và truyền dữ liệu vào -->
-    <BookList 
-      :filteredBooks="filteredBooks"
+    <PublisherList 
+      :filteredPublishers="filteredPublishers"
       :isLoading="isLoading"
-      :goToEditBook="goToEditBook"
-      :deleteBook="deleteBook"
+      :goToEditPublisher="goToEditPublisher"
+      :deletePublisher="deletePublisher"
     />
   </div>
 </template>
@@ -29,74 +29,72 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import InputSearch from '@/components/InputSearch.vue'; // Import component InputSearch
-import BookList from '@/components/BookList.vue'; // Import component BookList
-import BookService from '@/services/book.service.js'; // Import BookService
+import PublisherList from '@/components/PublisherList.vue'; // Import component PublisherList
+import PublisherService from '@/services/Publisher.service.js'; // Import PublisherService
 
-const books = ref([]);
+const publishers = ref([]);
 const searchText = ref('');
 const isLoading = ref(false);
 const error = ref(null);
 const router = useRouter();
 
-const filteredBooks = computed(() => {
+const filteredPublishers = computed(() => {
   const query = searchText.value.toLowerCase().trim();
   if (!query) {
-    return books.value; // Nếu không có từ khóa, trả về toàn bộ danh sách
+    return publishers.value; // Nếu không có từ khóa, trả về toàn bộ danh sách
   }
 
-  // Lọc sách theo Tên Sách hoặc Mã Sách
-  return books.value.filter(book => 
-    book.TenSach.toLowerCase().includes(query) ||
-    book.MaSach.toLowerCase().includes(query) ||
-    book.TacGia.toLowerCase().includes(query) ||
-    (book.SoLuongHienCo !== undefined && book.SoLuongHienCo.toString().includes(query))
+  // Lọc nhà xuất bản theo Tên NXB hoặc Mã NXB
+  return publishers.value.filter(publisher => 
+    publisher.TenNXB.toLowerCase().includes(query) ||
+    publisher.MaNXB.toLowerCase().includes(query)
   );
 });
 
-const fetchBooks = async () => {
+const fetchPublishers = async () => {
   try {
     isLoading.value = true;
     error.value = null;
-    // Sử dụng BookService để lấy dữ liệu
-    books.value = await BookService.getAll();
+    // Sử dụng PublisherService để lấy dữ liệu
+    publishers.value = await PublisherService.getAll();
   } catch (err) {
-    console.error("Lỗi tải sách:", err);
-    error.value = "Không thể tải danh sách sách. Vui lòng thử lại sau.";
+    console.error("Lỗi tải nhà xuất bản:", err);
+    error.value = "Không thể tải danh sách nhà xuất bản. Vui lòng thử lại sau.";
   } finally {
     isLoading.value = false;
   }
 };
 
-const deleteBook = async (MaSach) => {
-  if (window.confirm(`Bạn có chắc chắn muốn xóa sách có mã "${MaSach}" không?`)) {
+const deletePublisher = async (MaNXB) => {
+  if (window.confirm(`Bạn có chắc chắn muốn xóa nhà xuất bản có mã "${MaNXB}" không?`)) {
     try {
-      // Sử dụng BookService để xóa
-      await BookService.delete(MaSach);
-      // Tải lại danh sách sách sau khi xóa thành công
-      await fetchBooks();
+      // Sử dụng PublisherService để xóa
+      await PublisherService.delete(MaNXB);
+      // Tải lại danh sách nhà xuất bản sau khi xóa thành công
+      await fetchPublishers();
     } catch (err) {
-      console.error("Lỗi khi xóa sách:", err);
-      alert("Đã xảy ra lỗi khi xóa sách. Vui lòng thử lại.");
+      console.error("Lỗi khi xóa nhà xuất bản:", err);
+      alert("Đã xảy ra lỗi khi xóa nhà xuất bản. Vui lòng thử lại.");
     }
   }
 };
 
-const goToAddBook = () => {
-  router.push({ name: 'BookAdd' });
+const goToAddPublisher = () => {
+  router.push({ name: 'PublisherAdd' });
 };
 
-const goToEditBook = (MaSach) => {
-  router.push({ name: 'BookEdit', params: { MaSach: MaSach } });
+const goToEditPublisher = (MaNXB) => {
+  router.push({ name: 'PublisherEdit', params: { MaNXB: MaNXB } });
 };
 
 onMounted(() => {
-  fetchBooks();
+  fetchPublishers();
 });
 
 // Theo dõi sự thay đổi của route để tải lại dữ liệu nếu cần
 watch(() => router.currentRoute.value, (to, from) => {
-    if (to.name === 'BookManagement' && from.name && (from.name === 'BookEdit' || from.name === 'BookAdd')) {
-        fetchBooks();
+    if (to.name === 'PublisherManagement' && from.name && (from.name === 'PublisherEdit' || from.name === 'PublisherAdd')) {
+        fetchPublishers();
     }
 });
 </script>

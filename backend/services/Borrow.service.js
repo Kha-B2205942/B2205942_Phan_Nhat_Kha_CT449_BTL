@@ -13,7 +13,7 @@ class BorrowService {
             MaSach: payload.MaSach,
             NgayMuon: payload.NgayMuon,
             NgayTra: payload.NgayTra,
-            TinhTrang: payload.TinhTrang,
+            TrangThai: payload.TrangThai,
         };
         Object.keys(muon).forEach(
             (key) => muon[key] === undefined && delete muon[key]
@@ -65,7 +65,7 @@ class BorrowService {
             { returnDocument: "after" }
         );
         // Nếu sách được trả, tăng lại số lượng
-        if (result && result.TinhTrang === 'Đã trả' && oldBorrowRecord.TinhTrang !== 'Đã trả') {
+        if (result && result.TrangThai === 'Đã trả' && oldBorrowRecord.TrangThai !== 'Đã trả') {
             await this.Sach.updateOne({ MaSach: result.MaSach }, { $inc: { SoLuongHienCo: 1 } });
         }
         return result; 

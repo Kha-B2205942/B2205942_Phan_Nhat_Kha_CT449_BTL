@@ -1,6 +1,6 @@
 import createApiClient from "./api.service";
 
-class bookService {
+class BookService {
   constructor(baseUrl = "/api/sach") {
       this.api = createApiClient(baseUrl);
   }
@@ -23,4 +23,4 @@ class bookService {
       return (await this.api.delete(`/${MaSach}`)).data;
   }
 }
-export default new bookService();
+export default new BookService();

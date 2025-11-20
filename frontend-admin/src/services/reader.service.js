@@ -1,7 +1,7 @@
 import createApiClient from "./api.service";
 
 class bookService {
-  constructor(baseUrl = "/api/sach") {
+  constructor(baseUrl = "/api/docgia") {
       this.api = createApiClient(baseUrl);
   }
   async getAll() {
@@ -13,14 +13,14 @@ class bookService {
   async deleteAll() {
       return (await this.api.delete("/")).data;
   }
-  async get(MaSach) {
-      return (await this.api.get(`/${MaSach}`)).data;
+  async get(MaDocGia) {
+      return (await this.api.get(`/${MaDocGia}`)).data;
   }
-  async update(MaSach, data) {
-      return (await this.api.put(`/${MaSach}`, data)).data;
+  async update(MaDocGia, data) {
+      return (await this.api.put(`/${MaDocGia}`, data)).data;
   }
-  async delete(MaSach) {
-      return (await this.api.delete(`/${MaSach}`)).data;
+  async delete(MaDocGia) {
+      return (await this.api.delete(`/${MaDocGia}`)).data;
   }
 }
 export default new bookService();

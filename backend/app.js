@@ -5,9 +5,10 @@ const ApiError = require("./api-error");
 
 const docgiaRoutes = require("./routes/Reader.routes");
 const sachRoutes = require("./routes/Book.routes");
-const nhanvienRoutes = require("./routes/Librarian.routes");
+const nhanvienRoutes = require("./routes/Employee.routes");
 const muonRoutes = require("./routes/Borrow.routes");
 const nhaxuatbanRoutes = require("./routes/Publisher.routes");
+const authRoutes = require("./routes/Auth.routes");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/api/sach", sachRoutes);
 app.use("/api/nhanvien", nhanvienRoutes);
 app.use("/api/muon", muonRoutes);
 app.use("/api/nhaxuatban", nhaxuatbanRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Welcome to Quản Lý Mượn Sách!");
