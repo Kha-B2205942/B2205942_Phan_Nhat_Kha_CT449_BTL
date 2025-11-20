@@ -3,11 +3,11 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const ApiError = require("./api-error");
 
-const docgiaRoutes = require("./routes/docgia.routes");
-const sachRoutes = require("./routes/sach.routes");
-const nhanvienRoutes = require("./routes/nhanvien.routes");
-const muonRoutes = require("./routes/muon.routes");
-const nhaxuatbanRoutes = require("./routes/nhaxuatban.routes");
+const docgiaRoutes = require("./routes/Reader.routes");
+const sachRoutes = require("./routes/Book.routes");
+const nhanvienRoutes = require("./routes/Librarian.routes");
+const muonRoutes = require("./routes/Borrow.routes");
+const nhaxuatbanRoutes = require("./routes/Publisher.routes");
 
 const app = express();
 

@@ -1,7 +1,11 @@
 const { MongoClient } = require("mongodb");
-require("dotenv").config();
 
-const uri = process.env.MONGO_URI || "mongodb://localhost:27017";
-const client = new MongoClient(uri, { useUnifiedTopology: true });
+class MongoDB {
+    static connect = async (uri) => {
+        if (this.client) return this.client;
+        this.client = await MongoClient.connect(uri);
+        return this.client;
+    };
+}
 
-module.exports = { client };
+module.exports = MongoDB;
