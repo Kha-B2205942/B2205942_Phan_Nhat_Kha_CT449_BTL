@@ -24,8 +24,20 @@
       </li>
     </ul>
 
+    <!-- Đăng xuất -->
+    <div class="mt-auto">
+      <hr class="text-white-50" />
+      <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+          <a href="#" @click.prevent="handleLogout" class="nav-link text-white d-flex align-items-center py-2 px-3 rounded-3">
+            <i class="fa-solid fa-right-from-bracket me-2"></i>
+            <span>Đăng xuất</span>
+          </a>
+        </li>
+      </ul>
+    </div>
     <!-- Nút thu gọn -->
-    <div class="mt-auto text-center">
+    <div class="text-center pt-2">
       <button class="btn btn-outline-light btn-sm rounded-circle" @click="toggleCollapse">
         <i class="fa-solid" :class="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
       </button>
@@ -34,7 +46,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const isCollapsed = ref(false);
 
@@ -53,6 +67,13 @@ const toggleCollapse = () => {
     sidebar.classList.add("collapsed");
   } else {
     sidebar.classList.remove("collapsed");
+  }
+};
+
+const handleLogout = () => {
+  if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+    localStorage.removeItem('token');
+    router.push({ name: 'Login' }).then(() => window.location.reload());
   }
 };
 </script>
@@ -96,7 +117,7 @@ const toggleCollapse = () => {
   height: 0;
 }
 
-.sidebar.collapsed button {
+/*.sidebar.collapsed button {
   transform: rotate(180deg);
-}
+}*/
 </style>

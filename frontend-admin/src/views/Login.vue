@@ -60,9 +60,14 @@ const handleLogin = async () => {
     };
     const response = await AuthService.login(credentials);
     
-    // Lưu thông tin người dùng và token (AuthService sẽ xử lý việc này)
-    // Chuyển hướng đến trang dashboard hoặc trang quản lý chính
     router.push({ name: 'BookManagement' }); // Hoặc một trang dashboard mặc định
+    // Lưu token và thông tin người dùng vào localStorage
+    if (response.token && response.user) {
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+    }
+
+    router.push({ name: 'BookManagement' });
 
   } catch (error) {
     console.error("Lỗi đăng nhập:", error);

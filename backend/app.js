@@ -8,7 +8,8 @@ const sachRoutes = require("./routes/Book.routes");
 const nhanvienRoutes = require("./routes/Employee.routes");
 const muonRoutes = require("./routes/Borrow.routes");
 const nhaxuatbanRoutes = require("./routes/Publisher.routes");
-const authRoutes = require("./routes/Auth.routes");
+const authRoutes = require("./routes/Auth.routes.js");
+
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/api/sach", sachRoutes);
 app.use("/api/nhanvien", nhanvienRoutes);
 app.use("/api/muon", muonRoutes);
 app.use("/api/nhaxuatban", nhaxuatbanRoutes);
+app.use("/api/auth", authRoutes);
 
 
 app.get("/", (req, res) => {

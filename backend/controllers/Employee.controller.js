@@ -4,8 +4,8 @@ const ApiError = require("../api-error");
 
 // Create
 exports.create = async (req, res, next) => {
-  if (!req.body?.HoTenNV) {
-    return next(new ApiError(400, "Tên nhân viên không được để trống"));
+  if (!req.body?.HoTenNV || !req.body?.MSNV || !req.body?.Password) {
+    return next(new ApiError(400, "MSNV, Họ tên và Mật khẩu không được để trống"));
   }
   try {
     const employeeService = new EmployeeService(MongoDB.client);
@@ -49,9 +49,9 @@ exports.findOne = async (req, res, next) => {
 
 // Update
 exports.update = async (req, res, next) => {
-  if (Object.keys(req.body).length === 0)
+  if (Object.keys(req.body).length === 0) {
     return next(new ApiError(400, "Không có dữ liệu cập nhật"));
-
+  }
   try {
     const employeeService = new EmployeeService(MongoDB.client);
     const document = await employeeService.update(req.params.MSNV, req.body);

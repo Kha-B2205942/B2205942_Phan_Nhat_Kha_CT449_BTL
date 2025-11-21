@@ -1,9 +1,11 @@
 const { ObjectId } = require("mongodb");
+const bcrypt = require("bcryptjs");
 
-class LibrarianService {
+class EmployeeService {
   constructor(client) {
     this.NhanVien = client.db().collection("nhanvien");
   }
+
   extractNhanVienData(payload) {
     const nhanvien = {
       MSNV: payload.MSNV,
@@ -11,63 +13,69 @@ class LibrarianService {
       Password: payload.Password,
       ChucVu: payload.ChucVu,
       DiaChi: payload.DiaChi,
-      SoDienThoai: payload.SoDienThoai
+      SoDienThoai: payload.SoDienThoai,
     };
+
     Object.keys(nhanvien).forEach(
       (key) => nhanvien[key] === undefined && delete nhanvien[key]
     );
+
     return nhanvien;
   }
 
-    async create(payload) {
-        const nhanvien = this.extractNhanVienData(payload);
-        const existing = await this.NhanVien.findOne({ MSNV: nhanvien.MSNV });
-        if (existing) {
-            throw new Error(`Mã độc giả ${nhanvien.MSNV} đã tồn tại`);
-        }
-        const result = await this.NhanVien.insertOne(nhanvien);
-        if (result.acknowledged) {
-            return nhanvien;
-        }
-        return null;
+  async create(payload) {
+    const existing = await this.NhanVien.findOne({ MSNV: payload.MSNV });
+    if (existing) {
+      throw new Error(`Mã nhân viên ${payload.MSNV} đã tồn tại`);
     }
 
-    async find(filter) {
-        const cursor = await this.NhanVien.find(filter);
-        return await cursor.toArray();
-    }
+    const hashedPassword = await bcrypt.hash(payload.Password, 10);
 
-    async findByName(HoTenNV) {
-        return await this.find({
-        HoTenNV: { $regex: new RegExp(HoTenNV, "i") },
-        });
-    }
+    const nhanvienData = this.extractNhanVienData(payload);
+    nhanvienData.Password = hashedPassword; // Sử dụng mật khẩu đã được mã hóa
+    const result = await this.NhanVien.insertOne(nhanvienData);
 
-    async findByMSNV(MSNV) {
+    return result.acknowledged ? nhanvienData : null;
+  }
+
+  async find(filter) {
+    return await this.NhanVien.find(filter).toArray();
+  }
+
+  async findByName(HoTenNV) {
+    return await this.find({
+      HoTenNV: { $regex: new RegExp(HoTenNV, "i") },
+    });
+  }
+
+  async findByMSNV(MSNV) {
     return await this.NhanVien.findOne({ MSNV: MSNV });
+  }
+
+  async update(MSNV, payload) {
+    const updateData = this.extractNhanVienData(payload);
+
+    if (updateData.Password) {
+      updateData.Password = await bcrypt.hash(updateData.Password, 10); // Mã hóa mật khẩu mới
     }
 
-    async update(MSNV, payload) {
-        const update = this.extractNhanVienData(payload);
-        const result = await this.NhanVien.findOneAndUpdate(
-            { MSNV: MSNV },
-            { $set: update },
-            { returnDocument: "after" }
-        );
-        return result;
-    }
+    const result = await this.NhanVien.findOneAndUpdate(
+      { MSNV },
+      { $set: updateData },
+      { returnDocument: "after" }
+    );
 
-    async delete(MSNV) {
-        const result = await this.NhanVien.findOneAndDelete({
-            MSNV: MSNV
-        });
-        return result;
-    }
+    return result.value;
+  }
 
-    async deleteAll() {
-        const result = await this.NhanVien.deleteMany({});
-        return result.deletedCount;
-    }
+  async delete(MSNV) {
+    return await this.NhanVien.findOneAndDelete({ MSNV: MSNV });
+  }
+
+  async deleteAll() {
+    const result = await this.NhanVien.deleteMany({});
+    return result.deletedCount;
+  }
 }
 
-module.exports = LibrarianService;
+module.exports = EmployeeService;
