@@ -3,6 +3,8 @@ const nhanvien = require("../controllers/Employee.controller");
 
 const router = express.Router();
 
+router.post('/login', nhanvien.login);
+
 router.route("/")
     .get(nhanvien.findAll)     
     .post(nhanvien.create)

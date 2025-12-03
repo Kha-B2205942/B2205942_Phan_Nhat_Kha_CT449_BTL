@@ -12,7 +12,7 @@ import Login from '@/views/Login.vue';
 const routes = [
   {
     path: '/',
-    redirect: '/login',
+    redirect: '/sach',
   },
   {
     path: '/login',

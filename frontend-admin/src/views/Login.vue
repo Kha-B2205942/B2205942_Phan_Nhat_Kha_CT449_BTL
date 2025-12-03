@@ -59,16 +59,16 @@ const handleLogin = async () => {
       Password: password.value,
     };
     const response = await AuthService.login(credentials);
-    
-    router.push({ name: 'BookManagement' }); // Hoặc một trang dashboard mặc định
+
     // Lưu token và thông tin người dùng vào localStorage
     if (response.token && response.user) {
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
+      // Chuyển hướng và tải lại trang để đảm bảo Sidebar được hiển thị
+      router.push({ name: 'BookManagement' }).then(() => {
+        window.location.reload();
+      });
     }
-
-    router.push({ name: 'BookManagement' });
-
   } catch (error) {
     console.error("Lỗi đăng nhập:", error);
     errorMessage.value = error.response?.data?.message || 'MSNV hoặc mật khẩu không chính xác. Vui lòng thử lại.';

@@ -8,7 +8,6 @@ exports.create = async (req, res, next) => {
     "MaNXB",
     "TenNXB",
     "DiaChi",
-    "DienThoai",
   ];
   const missingFields = requiredFields.filter(
     (field) => !req.body[field] || req.body[field].toString().trim() === ""

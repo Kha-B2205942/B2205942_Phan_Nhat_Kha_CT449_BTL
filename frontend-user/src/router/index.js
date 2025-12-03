@@ -1,23 +1,76 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "@/stores/auth.store";
+import LoginView from "../views/LoginView.vue";
+import Register from "../views/Register.vue";
+import Home from "../views/Home.vue";
+import ProfileView from "../views/ProfileView.vue";
+import BookDetail from "../views/BookDetail.vue";
+import BorrowHistory from "../views/BorrowHistory.vue";
+import Explore from "../views/Explore.vue";
+
+const routes = [
+    {
+        path: "/",
+        name: "home",
+        component: Home,
+    },
+    {
+        path: "/login",
+        name: "login",
+        component: LoginView,
+    },
+    {
+        path: "/register",
+        name: "register",
+        component: Register,
+    },
+    {
+        path: "/profile",
+        name: "profile",
+        component: ProfileView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: "/history",
+        name: "BorrowHistory",
+        component: BorrowHistory,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: "/explore",
+        name: "explore",
+        component: Explore,
+    },
+    
+    {
+        path: '/sach/:id',
+        name: 'BookDetail',
+        component: BookDetail,
+        meta: { requiresAuth: true }
+    },
+
+    {
+        path: "/:pathMatch(.*)*",
+        redirect: "/login",
+    },
+];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-  ],
-})
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes,
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore();
+    const isLoggedIn = !!authStore.token;
+
+    if (to.meta.requiresAuth && !isLoggedIn) {
+        return next({ name: "login" });
+    }
+    if (isLoggedIn && to.name === 'login') {
+        return next({ path: "/" });
+    }
+    next();
+});
+
+export default router;

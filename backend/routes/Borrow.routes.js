@@ -8,6 +8,9 @@ router.route("/")
     .post(muon.create)
     .delete(muon.deleteAll);
 
+router.route("/reader/:id")
+    .get(muon.findByReader)
+
 router.route("/:id")
     .get(muon.findOne)
     .put(muon.update)

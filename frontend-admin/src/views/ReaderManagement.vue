@@ -46,8 +46,7 @@ const filteredReaders = computed(() => {
  
   // Lọc độc giả theo Tên hoặc Mã Độc Giả
   return readers.value.filter(reader =>
-      reader.HoLot.toLowerCase().includes(query) ||
-      reader.Ten.toLowerCase().includes(query) ||
+      reader.HoTen.toLowerCase().includes(query) ||
       reader.MaDocGia.toLowerCase().includes(query)
   );
 });
@@ -89,7 +88,7 @@ const goToEditReader = (MaDocGia) => {
 onMounted(() => {
   fetchReaders();
 });
- 
+
 // Theo dõi sự thay đổi của route để tải lại dữ liệu nếu cần
 watch(() => router.currentRoute.value, (to, from) => {
     if (to.name === 'ReaderManagement' && from.name && (from.name === 'ReaderEdit' || from.name === 'ReaderAdd')) {
@@ -97,7 +96,7 @@ watch(() => router.currentRoute.value, (to, from) => {
     }
 });
 </script>
- 
+
 <style scoped>
 .search-box .input-group-text {
   background-color: white;

@@ -16,6 +16,10 @@ class BorrowService {
     async delete(id) {
         return (await this.api.delete(`/${id}`)).data;
     }
+
+    async findByReader(readerId) {
+        return (await this.api.get(`/borrows/reader/${readerId}`)).data;
+    }
 }
 
 export default new BorrowService();

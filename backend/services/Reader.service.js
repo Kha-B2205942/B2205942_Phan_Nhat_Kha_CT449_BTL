@@ -1,4 +1,5 @@
 const { ObjectId } = require("mongodb");
+const bcrypt = require("bcryptjs");
 
 class ReaderService {
     constructor(client) {
@@ -27,6 +28,10 @@ class ReaderService {
         if (existing) {
             throw new Error(`Mã độc giả ${docgia.MaDocGia} đã tồn tại`);
         }
+        // Hash mật khẩu trước khi lưu
+        if (docgia.Password) {
+            docgia.Password = await bcrypt.hash(docgia.Password, 10);
+        }
         const result = await this.DocGia.insertOne(docgia);
         if (result.acknowledged) {
             return docgia;
@@ -51,6 +56,10 @@ class ReaderService {
 
     async update(MaDocGia, payload) {
         const update = this.extractDocGiaData(payload);
+        // Hash mật khẩu nếu có cập nhật
+        if (update.Password) {
+            update.Password = await bcrypt.hash(update.Password, 10);
+        }
         const result = await this.DocGia.findOneAndUpdate(
             { MaDocGia: MaDocGia },
             { $set: update },

@@ -87,3 +87,15 @@ exports.deleteAll = async (_req, res, next) => {
         return next(new ApiError(500, "Lỗi khi xóa tất cả phiếu mượn"));
     }
 };
+// Tìm các lượt mượn theo mã độc giả
+exports.findByReader = async (req, res, next) => {
+    try {
+        const borrowService = new BorrowService(MongoDB.client);
+        const documents = await borrowService.findByReader(req.params.id);
+        return res.send(documents);
+    } catch (error) {
+        return next(
+            new ApiError(500, `Lỗi khi tìm kiếm lượt mượn cho độc giả có mã=${req.params.id}`)
+        );
+    }
+};

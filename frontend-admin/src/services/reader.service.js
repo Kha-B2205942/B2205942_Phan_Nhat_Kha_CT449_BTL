@@ -1,6 +1,6 @@
 import createApiClient from "./api.service";
 
-class bookService {
+class ReaderService {
   constructor(baseUrl = "/api/docgia") {
       this.api = createApiClient(baseUrl);
   }
@@ -23,4 +23,4 @@ class bookService {
       return (await this.api.delete(`/${MaDocGia}`)).data;
   }
 }
-export default new bookService();
+export default new ReaderService();

@@ -8,7 +8,7 @@
         <div class="col-md-6">
           <div class="mb-3">
             <label for="msnv" class="form-label">Mã Số Nhân Viên (MSNV)</label>
-            <input type="text" class="form-control" id="msnv" v-model="employee.MSNV" :disabled="isEditMode" required>
+            <input type="text" class="form-control" id="msnv" v-model="employee.MSNV" disabled required>
           </div>
           <div class="mb-3">
             <label for="hoTen" class="form-label">Họ và Tên</label>
@@ -67,6 +67,11 @@ const errorMessage = ref('');
 // Xác định xem form đang ở chế độ chỉnh sửa hay thêm mới
 const isEditMode = computed(() => !!route.params.MSNV);
 
+// Tự động tạo Mã Nhân Viên (VD: NV + timestamp)
+const generateMSNV = () => {
+  return 'NV' + Date.now();
+};
+
 onMounted(async () => {
   if (isEditMode.value) {
     try {
@@ -80,7 +85,7 @@ onMounted(async () => {
   } else {
     // Khởi tạo đối tượng nhân viên mới
     employee.value = {
-      MSNV: '',
+      MSNV: generateMSNV(),
       HoTenNV: '',
       Password: '',
       ChucVu: '',
@@ -104,7 +109,7 @@ const handleSubmit = async () => {
       await EmployeeService.create(employee.value);
       alert('Thêm nhân viên mới thành công!');
     }
-    router.push({ name: 'EmployeeManagement' }); // Chuyển hướng về trang danh sách
+    router.push({ name: 'EmployeeManagement' }); 
   } catch (error) {
     console.error("Lỗi khi lưu thông tin nhân viên:", error);
     errorMessage.value = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';

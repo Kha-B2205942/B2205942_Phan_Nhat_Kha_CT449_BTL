@@ -1,6 +1,43 @@
 const EmployeeService = require("../services/Employee.service");
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
+const config = require("../config");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+// Login for employee (admin)
+exports.login = async (req, res, next) => {
+  try {
+    const { MSNV, Password } = req.body;
+    if (!MSNV || !Password) {
+      return next(new ApiError(400, "MSNV và Mật khẩu không được để trống"));
+    }
+
+    const employeeService = new EmployeeService(MongoDB.client);
+    const nhanvien = await employeeService.findByMSNV(MSNV);
+    if (!nhanvien) {
+      return next(new ApiError(401, "MSNV hoặc mật khẩu không chính xác"));
+    }
+
+    const isMatch = await bcrypt.compare(Password, nhanvien.Password);
+    if (!isMatch) {
+      return next(new ApiError(401, "MSNV hoặc mật khẩu không chính xác"));
+    }
+
+    const token = jwt.sign(
+      { id: nhanvien._id, msnv: nhanvien.MSNV, role: "admin" },
+      config.jwt.secret,
+      { expiresIn: "1d" }
+    );
+
+    const user = { ...nhanvien };
+    if (user.Password) delete user.Password;
+    return res.status(200).json({ token, user });
+  } catch (error) {
+    console.error("Employee login error:", error);
+    return next(new ApiError(500, "Lỗi khi đăng nhập nhân viên"));
+  }
+};
 
 // Create
 exports.create = async (req, res, next) => {

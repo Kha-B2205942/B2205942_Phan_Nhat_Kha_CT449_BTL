@@ -1,31 +1,36 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
+const path = require("path"); // Thêm path
 const ApiError = require("./api-error");
 
-const docgiaRoutes = require("./routes/Reader.routes");
-const sachRoutes = require("./routes/Book.routes");
-const nhanvienRoutes = require("./routes/Employee.routes");
-const muonRoutes = require("./routes/Borrow.routes");
-const nhaxuatbanRoutes = require("./routes/Publisher.routes");
-const authRoutes = require("./routes/Auth.routes.js");
-
+const docgiaRoutes = require("./routes/Reader.routes.js");
+const sachRoutes = require("./routes/Book.routes.js");
+const nhanvienRoutes = require("./routes/Employee.routes.js");
+const muonRoutes = require("./routes/Borrow.routes.js");
+const nhaxuatbanRoutes = require("./routes/Publisher.routes.js");
+const uploadRouter = require("./routes/Upload.routes.js");
 
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.use("/api/docgia", docgiaRoutes);
 app.use("/api/sach", sachRoutes);
 app.use("/api/nhanvien", nhanvienRoutes);
 app.use("/api/muon", muonRoutes);
 app.use("/api/nhaxuatban", nhaxuatbanRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/upload", uploadRouter); 
+
+// Phục vụ các file tĩnh từ thư mục 'public'
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Phục vụ các file upload (ảnh bìa, ...)
+app.use('/uploads', express.static(path.join(__dirname, './uploads')));
 
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Quản Lý Mượn Sách!");
+  res.json({ message: "Welcome to book management application." });
 });
 // handle 404 response
 app.use((req, res, next) =>{

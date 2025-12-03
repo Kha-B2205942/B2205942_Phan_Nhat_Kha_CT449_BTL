@@ -27,6 +27,11 @@ exports.create = async (req, res, next) => {
   }
   try {
     const bookService = new BookService(MongoDB.client);
+    // Nếu có file được upload bởi multer, gán đường dẫn vào req.body
+    if (req.file) {
+      req.body.HinhAnh = `/uploads/${req.file.filename}`;
+    }
+
     const document = await bookService.create(req.body);
     return res.send(document);
   } catch (error) {
@@ -72,6 +77,11 @@ exports.update = async (req, res, next) => {
 
   try {
     const bookService = new BookService(MongoDB.client);
+    // Nếu có file mới được upload, gán đường dẫn vào req.body để cập nhật
+    if (req.file) {
+      req.body.HinhAnh = `/uploads/${req.file.filename}`;
+    }
+
     const document = await bookService.update(req.params.MaSach, req.body);
     if (!document) {
       return next(new ApiError(404, "Không tìm thấy sách"));

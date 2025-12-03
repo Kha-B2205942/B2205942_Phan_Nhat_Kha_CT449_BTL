@@ -4,8 +4,7 @@
         <thead class="table-info">
           <tr>
             <th>Mã Độc Giả</th>
-            <th>Họ Lót</th>
-            <th>Tên</th>
+            <th>Họ và Tên</th>
             <th>Ngày Sinh</th>
             <th>Phái</th>
             <th>Địa Chỉ</th>
@@ -16,8 +15,7 @@
         <tbody>
           <tr v-for="reader in filteredReaders" :key="reader.MaDocGia">
             <td>{{ reader.MaDocGia }}</td>
-            <td>{{ reader.HoLot }}</td>
-            <td>{{ reader.Ten }}</td>
+            <td>{{ reader.HoTen }}</td>
             <td>{{ reader.NgaySinh ? new Date(reader.NgaySinh).toLocaleDateString('vi-VN') : '' }}</td>
             <td>{{ reader.Phai }}</td>
             <td>{{ reader.DiaChi }}</td>

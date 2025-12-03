@@ -1,56 +1,45 @@
 <template>
-  <div class="sidebar d-flex flex-column text-white p-3">
-    <!-- Tiêu đề -->
-    <h5 class="fw-bold mb-4 text-center">
-      <i class="fa-solid fa-book me-2"></i> QUẢN LÝ THƯ VIỆN
-    </h5>
-
-    <!-- Chức năng ứng dụng -->
-    <div class="mb-2">
-      <p class="text-uppercase small fw-bold opacity-75">Chức năng ứng dụng</p>
-    </div>
-
-    <!-- Menu -->
-    <ul class="nav nav-pills flex-column mb-auto">
-      <li v-for="item in menuItems" :key="item.path" class="nav-item">
-        <router-link
-          :to="item.path"
-          class="nav-link text-white d-flex align-items-center py-2 px-3 rounded-3"
-          active-class="active-link"
-        >
-          <i :class="item.icon + ' me-2'"></i>
-          <span>{{ item.label }}</span>
-        </router-link>
-      </li>
-    </ul>
-
-    <!-- Đăng xuất -->
-    <div class="mt-auto">
-      <hr class="text-white-50" />
-      <ul class="nav nav-pills flex-column">
-        <li class="nav-item">
-          <a href="#" @click.prevent="handleLogout" class="nav-link text-white d-flex align-items-center py-2 px-3 rounded-3">
-            <i class="fa-solid fa-right-from-bracket me-2"></i>
-            <span>Đăng xuất</span>
-          </a>
-        </li>
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #323a75;">
+    <div class="container-fluid">
+      <!-- Tiêu đề -->
+      <router-link class="navbar-brand fw-bold" to="/sach">
+        <i ></i> QUẢN LÝ THƯ VIỆN
+      </router-link>
+      
+      <!-- Nút Toggler cho màn hình nhỏ -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <!-- Menu -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li v-for="item in menuItems" :key="item.path" class="nav-item">
+            <router-link :to="item.path" class="nav-link" active-class="active">
+              <i :class="item.icon + ' me-1'"></i>
+              {{ item.label }}
+            </router-link>
+          </li>
+        </ul>
+        
+        <!-- Đăng xuất -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a href="#" @click.prevent="handleLogout" class="nav-link">
+              <i class="fa-solid fa-right-from-bracket me-1"></i>
+              Đăng xuất
+            </a>
+          </li>
+        
       </ul>
     </div>
-    <!-- Nút thu gọn -->
-    <div class="text-center pt-2">
-      <button class="btn btn-outline-light btn-sm rounded-circle" @click="toggleCollapse">
-        <i class="fa-solid" :class="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
-      </button>
-    </div>
   </div>
+  </nav>
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
-
-const isCollapsed = ref(false);
 
 const menuItems = [
   { label: "Quản lý Sách", path: "/sach", icon: "fa-solid fa-book" },
@@ -59,16 +48,6 @@ const menuItems = [
   { label: "Quản lý Nhà Xuất Bản", path: "/nhaxuatban", icon: "fa-solid fa-building" },
   { label: "Quản lý Độc Giả", path: "/docgia", icon: "fa-solid fa-users" },
 ];
-
-const toggleCollapse = () => {
-  isCollapsed.value = !isCollapsed.value;
-  const sidebar = document.querySelector(".sidebar");
-  if (isCollapsed.value) {
-    sidebar.classList.add("collapsed");
-  } else {
-    sidebar.classList.remove("collapsed");
-  }
-};
 
 const handleLogout = () => {
   if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
@@ -79,45 +58,4 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
-.sidebar {
-  width: 250px;
-  min-height: 100vh;
-  background-color: #323a75; 
-  transition: width 0.3s ease;
-}
-
-.sidebar.collapsed {
-  width: 80px;
-}
-
-.sidebar .nav-link {
-  color: #ffffffb3;
-  font-size: 15px;
-  transition: background 0.2s;
-}
-
-.sidebar .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
-}
-
-.sidebar .active-link {
-  background-color: #0d6efd;
-  color: #fff !important;
-  font-weight: 600;
-}
-
-.sidebar.collapsed .nav-link span {
-  display: none;
-}
-
-.sidebar.collapsed h5 {
-  font-size: 0;
-  opacity: 0;
-  height: 0;
-}
-
-/*.sidebar.collapsed button {
-  transform: rotate(180deg);
-}*/
 </style>

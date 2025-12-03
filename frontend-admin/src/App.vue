@@ -3,10 +3,11 @@
   <div v-if="isLoginPage">
     <router-view />
   </div>
-  <!-- Với các trang khác, hiển thị layout chính với Sidebar -->
-  <div v-else class="d-flex">
-    <Sidebar v-if="showSidebar" />
-    <div class="flex-grow-1 p-4" style="min-height: 100vh;">
+  <!-- Với các trang khác, hiển thị layout chính với Navbar -->
+  <div v-else>
+    <Navbar v-if="showNavbar" />
+    <!-- Vùng chứa nội dung chính của trang -->
+    <div class="container-fluid p-4">
       <router-view />
     </div>
   </div>
@@ -15,11 +16,11 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import Sidebar from './components/Sidebar.vue';
+import Navbar from './components/Sidebar.vue'; 
 
 const route = useRoute();
 const isLoginPage = computed(() => route.name === 'Login');
-const showSidebar = computed(() => !!localStorage.getItem('token'));
+const showNavbar = computed(() => !!localStorage.getItem('token'));
 </script>
 
 <style>

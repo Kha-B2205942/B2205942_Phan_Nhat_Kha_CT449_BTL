@@ -17,11 +17,26 @@
 
     <!-- Hiển thị component BookList và truyền dữ liệu vào -->
     <BookList 
-      :filteredBooks="filteredBooks"
+      :filteredBooks="paginatedBooks"
       :isLoading="isLoading"
       :goToEditBook="goToEditBook"
       :deleteBook="deleteBook"
     />
+
+    <!-- Pagination Controls -->
+    <nav v-if="totalPages > 1" class="mt-4" aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+          <a class="page-link" href="#" @click.prevent="changePage(currentPage - 1)">&laquo;</a>
+        </li>
+        <li v-for="page in totalPages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+          <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page }}</a>
+        </li>
+        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+          <a class="page-link" href="#" @click.prevent="changePage(currentPage + 1)">&raquo;</a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </template>
 
@@ -37,6 +52,8 @@ const searchText = ref('');
 const isLoading = ref(false);
 const error = ref(null);
 const router = useRouter();
+const currentPage = ref(1);
+const booksPerPage = ref(4); // Hiển thị 4 sách mỗi trang
 
 const filteredBooks = computed(() => {
   const query = searchText.value.toLowerCase().trim();
@@ -53,6 +70,22 @@ const filteredBooks = computed(() => {
   );
 });
 
+const totalPages = computed(() => {
+  return Math.ceil(filteredBooks.value.length / booksPerPage.value);
+});
+
+const paginatedBooks = computed(() => {
+  const start = (currentPage.value - 1) * booksPerPage.value;
+  const end = start + booksPerPage.value;
+  return filteredBooks.value.slice(start, end);
+});
+
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
 const fetchBooks = async () => {
   try {
     isLoading.value = true;
@@ -61,7 +94,7 @@ const fetchBooks = async () => {
     books.value = await BookService.getAll();
   } catch (err) {
     console.error("Lỗi tải sách:", err);
-    error.value = "Không thể tải danh sách sách. Vui lòng thử lại sau.";
+    error.value = err.response?.data?.message || "Không thể tải danh sách sách. Vui lòng thử lại sau.";
   } finally {
     isLoading.value = false;
   }
@@ -89,16 +122,21 @@ const goToEditBook = (MaSach) => {
   router.push({ name: 'BookEdit', params: { MaSach: MaSach } });
 };
 
+watch(searchText, () => {
+  currentPage.value = 1; // Reset về trang 1 khi tìm kiếm
+});
+
 onMounted(() => {
   fetchBooks();
 });
 
-// Theo dõi sự thay đổi của route để tải lại dữ liệu nếu cần
-watch(() => router.currentRoute.value, (to, from) => {
-    if (to.name === 'BookManagement' && from.name && (from.name === 'BookEdit' || from.name === 'BookAdd')) {
-        fetchBooks();
-    }
-});
+
+watch(
+  () => router.currentRoute.value,
+  (toRoute) => {
+    if (toRoute.name === 'BookManagement') fetchBooks();
+  }, { immediate: true } // `immediate: true` đảm bảo nó chạy ngay lần đầu khi component được tạo, thay thế cho onMounted
+);
 </script>
 
 <style scoped>

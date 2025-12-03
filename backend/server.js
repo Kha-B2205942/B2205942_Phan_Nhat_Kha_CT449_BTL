@@ -1,5 +1,6 @@
 const app = require("./app");
-const config = require("./config");
+require('dotenv').config(); // Tải các biến môi trường từ tệp .env
+const config = require("./config/index.js");
 const MongoDB = require("./utils/mongodb.util");
 
 async function startServer() {

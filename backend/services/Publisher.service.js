@@ -10,7 +10,6 @@ class PublisherService {
       MaNXB: payload.MaNXB,
       TenNXB: payload.TenNXB,
       DiaChi: payload.DiaChi,
-      DienThoai: payload.DienThoai
     };
     Object.keys(nxb).forEach(
       (key) => nxb[key] === undefined && delete nxb[key]
