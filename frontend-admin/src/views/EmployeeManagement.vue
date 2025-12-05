@@ -47,7 +47,9 @@ const filteredEmployees = computed(() => {
   // Lọc nhân viên theo Tên hoặc MSNV
   return employees.value.filter(employee => 
     employee.HoTenNV.toLowerCase().includes(query) ||
-    employee.MSNV.toLowerCase().includes(query)
+    employee.MSNV.toLowerCase().includes(query) ||
+    employee.ChucVu.toLowerCase().includes(query) ||
+    employee.DiaChi.toLowerCase().includes(query)
   );
 });
  
