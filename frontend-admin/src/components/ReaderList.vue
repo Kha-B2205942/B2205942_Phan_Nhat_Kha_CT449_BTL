@@ -21,7 +21,6 @@
             <td>{{ reader.DiaChi }}</td>
             <td>{{ reader.DienThoai }}</td>
             <td>
-              <button class="btn btn-sm btn-primary me-1" @click="goToEditReader(reader.MaDocGia)" title="Chỉnh sửa"><i class="fa-solid fa-pen"></i></button>
               <button class="btn btn-sm btn-danger" @click="deleteReader(reader.MaDocGia)" title="Xóa"><i class="fa-solid fa-trash"></i></button>
             </td>
           </tr>

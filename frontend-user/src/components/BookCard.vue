@@ -41,7 +41,7 @@
       <button 
         class="btn btn-primary btn-sm position-absolute" 
         style="bottom: 8px; right: 8px;"
-        @click.prevent.stop="$emit('borrow-click', book)">
+        @click.stop="$emit('borrow-click', book)">
         <i class="fa-solid fa-cart-plus me-1"></i>Mượn
       </button>
     </div>

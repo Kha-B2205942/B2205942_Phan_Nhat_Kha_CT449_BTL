@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #323a75;">
+  <nav class="navbar navbar-expand-lg navbar-dark" style=" background: linear-gradient(to bottom left, #37474F,#1F3A5F);">
     <div class="container-fluid">
       <!-- Tiêu đề -->
       <router-link class="navbar-brand fw-bold" to="/sach">

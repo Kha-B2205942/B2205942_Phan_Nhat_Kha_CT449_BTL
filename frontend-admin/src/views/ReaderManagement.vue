@@ -2,10 +2,7 @@
   <div>
     <h4 class="fw-bold mb-3">Danh Sách Độc Giả</h4>
     
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div>
-        <button class="btn btn-primary me-2" @click="goToAddReader"><i class="fa-solid fa-plus me-1"></i>Thêm mới</button>
-      </div>
+    <div class="d-flex justify-content-end align-items-center mb-3">
       <!-- Thanh tìm kiếm -->
       <div>
         <InputSearch v-model="searchText" />

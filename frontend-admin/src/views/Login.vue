@@ -83,8 +83,8 @@ const handleLogin = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
-  background-color: #f8f9fa;
+  min-height: 100vh;
+  background: linear-gradient(to top, #e6e9f0, #eef1f5);
 }
 .login-card {
   width: 100%;

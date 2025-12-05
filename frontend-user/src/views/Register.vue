@@ -2,7 +2,6 @@
   <div class="auth-container">
     <div class="auth-card">
       <h2 class="title">Tạo Tài Khoản</h2>
-      <p class="subtitle">Mã độc giả sẽ được tự động tạo</p>
 
       <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
       <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>

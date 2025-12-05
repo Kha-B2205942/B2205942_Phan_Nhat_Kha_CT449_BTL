@@ -22,10 +22,10 @@ const route = useRoute();
 const isLoginPage = computed(() => route.name === 'Login');
 const showNavbar = computed(() => !!localStorage.getItem('token'));
 </script>
-
 <style>
 body {
-  background-color: #f8f9fa;
+  min-height: 100vh;
+  background: linear-gradient(to top, #f0f2f5, #d9e2ec);
+  background-attachment: fixed;
 }
 </style>
- 

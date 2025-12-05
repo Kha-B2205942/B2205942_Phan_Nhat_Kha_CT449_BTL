@@ -72,9 +72,6 @@ const props = defineProps({
   deleteBook: Function,
 });
 
-// -----------------------
-// HELPER FUNCTIONS
-// -----------------------
 const formatCurrency = (value) => {
   if (!value) return "0 ₫";
   return new Intl.NumberFormat("vi-VN", {
@@ -91,7 +88,6 @@ const getImage = (path) => {
   if (path.includes('localhost') || path.includes('http')) {
     return path;
   }
-  // Nếu không, thêm baseURL
   return `http://localhost:3000${path}`;
 };
 

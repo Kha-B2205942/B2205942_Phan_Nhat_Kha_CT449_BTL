@@ -28,7 +28,7 @@ import BookService from '@/services/Book.service.js';
 const books = ref([]);
 const isLoading = ref(false);
 const error = ref(null);
-const displayLimit = ref(6); // Hiển thị 6 sách ban đầu (2 hàng x 3 cột)
+const displayLimit = ref(9); // Hiển thị 9 sách ban đầu (2 hàng x 3 cột)
 
 const fetchBooks = async () => {
   isLoading.value = true;
